@@ -1,0 +1,91 @@
+dataset:
+  parkinson:
+    subjects:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    recordings: []
+    window_size: 128
+    window_stride: 64
+    normalize: true
+    task_type: binary
+    use_other_sensors: false
+    sensor_type: acc
+  data_root: ./datasets
+  subject_independent_split: true
+  name: Parkinson
+  test_split: 0.15
+  train_split: 0.7
+  val_split: 0.15
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 2
+model:
+  type: spike_driven_transformer_v2
+  model_file: snn-model/spike_driven_transformer_v2.py
+  model_class: SpikeDrivenTransformerV2
+  num_classes: 2
+  in_channels: 3
+  embed_dims: 128
+  num_heads: 4
+  mlp_ratios: 2
+  qkv_bias: false
+  qk_scale: null
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+  drop_path_rate: 0.1
+  norm_layer: LayerNorm
+  depth: 4
+  sr_ratios: 1
+  T: 4
+  attn_mode: direct_xor
+  spike_mode: lif
+  get_embed: false
+  dvs_mode: false
+  TET: false
+  cml: false
+project:
+  checkpoint_dir: ./logs-Subject-Independent/checkpoints/SNN_IMU_Parkinson
+  exp_dir: ./logs-Subject-Independent
+  log_file: ./logs-Subject-Independent/SNN_IMU_Parkinson_SpikeDrivenTransformerV2_training.log
+  name: SNN_IMU_Parkinson_SpikeDrivenTransformerV2
+  seed: 42
+testing:
+  batch_size: 32
+  checkpoint: ''
+  num_workers: 8
+  output_dir: ./logs-Subject-Independent/results
+  save_predictions: false
+training:
+  amp: false
+  batch_size: 32
+  clip_grad: 1.0
+  eval_freq: 5
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  loss:
+    name: cross_entropy
+    label_smoothing: 0.0
+  num_epochs: 100
+  num_workers: 8
+  optimizer:
+    name: adamw
+    lr: 0.001
+    weight_decay: 0.01
+  pin_memory: true
+  print_freq: 100
+  save_freq: 10
+  scheduler:
+    name: cosine
+    min_lr: 1e-5
+    warmup_epochs: 10
+    warmup_lr: 1e-6

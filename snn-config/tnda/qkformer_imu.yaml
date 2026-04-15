@@ -1,0 +1,130 @@
+dataset:
+  name: TNDA
+  data_root: ./datasets
+  subject_independent_split: true
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  tnda:
+    subjects:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 36
+    - 37
+    - 38
+    - 39
+    - 40
+    - 41
+    - 42
+    - 43
+    - 44
+    - 45
+    - 46
+    - 47
+    - 48
+    - 49
+    - 50
+    activities:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    window_size: 200
+    window_stride: 100
+    normalize: true
+    sensor_positions: all
+    sensor_type: acc
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 0
+project:
+  name: SNN_IMU_TNDA_QKFormerIMU
+  exp_dir: ./logs-Subject-Independent
+  checkpoint_dir: ./logs-Subject-Independent/checkpoints/SNN_IMU_TNDA_QKFormerIMU
+  log_file: ./logs-Subject-Independent/SNN_IMU_TNDA_QKFormerIMU_training.log
+  seed: 42
+model:
+  type: qkformer_imu
+  model_file: snn-model/qkformer_imu.py
+  model_class: QKFormerIMU
+  num_classes: 8
+  input_channels: 3
+  embed_dims: 64
+  depth: 3
+  num_heads: 2
+  mlp_ratio: 2.0
+  dropout: 0.0
+  lif_backend: torch
+training:
+  batch_size: 32
+  num_epochs: 100
+  num_workers: 8
+  pin_memory: true
+  print_freq: 100
+  eval_freq: 5
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  save_freq: 10
+  clip_grad: 1.0
+  amp: false
+  pred_time_mode: mean
+  loss:
+    name: cross_entropy
+    label_smoothing: 0.1
+  optimizer:
+    name: adamw
+    lr: 0.001
+    weight_decay: 0.01
+    momentum: 0.9
+  scheduler:
+    name: cosine
+    min_lr: 1.0e-06
+    warmup_epochs: 10
+    warmup_lr: 1e-6
+    step_size: 50
+    gamma: 0.1
+testing:
+  batch_size: 32
+  num_workers: 8
+  checkpoint: ''
+  output_dir: ./logs-Subject-Independent/results
+  save_predictions: false

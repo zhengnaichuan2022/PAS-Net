@@ -1,0 +1,117 @@
+dataset:
+  parkinson:
+    subjects:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    recordings: []
+    window_size: 128
+    window_stride: 64
+    normalize: true
+    task_type: binary
+    use_other_sensors: false
+    sensor_type: acc
+  data_root: ./datasets
+  subject_independent_split: true
+  name: Parkinson
+  test_split: 0.15
+  train_split: 0.7
+  val_split: 0.15
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 0
+model:
+  type: pas_net
+  model_file: snn-model/PAS_Net.py
+  model_class: IMUSpikeformer
+  num_classes: 2
+  input_channels: 3
+  embed_dims: 128
+  depth: 5
+  mlp_ratio: 3.0
+  drop_path_rate: 0.12
+  V_nodes: 1
+  use_adaptive_topology: true
+  norm_type: tbn
+  use_plif: true
+  learnable_decay: true
+  st_kernel_size: 5
+  st_causal: false
+  residual_mode: add
+  lif_backend: torch
+  use_local_stats: true
+  local_stat_stride: 4
+  neuromod_mode: conv
+  neuromod_alpha: 0.85
+  use_causal_dw_mlp: true
+  mlp_time_kernel: 5
+  dilation_base: 3
+  use_lightweight_mlp_dw: false
+  share_block_weights: false
+  spatial_pool_mode: mean_max
+  dropout: 0.15
+project:
+  checkpoint_dir: ./logs-Subject-Independent-Ours/checkpoints/SNN_IMU_Parkinson_PAS_Net
+  exp_dir: ./logs-Subject-Independent-Ours
+  log_file: ./logs-Subject-Independent-Ours/SNN_IMU_Parkinson_PAS_Net_training.log
+  name: SNN_IMU_Parkinson_PAS_Net
+  seed: 42
+testing:
+  batch_size: 64
+  checkpoint: ''
+  num_workers: 8
+  output_dir: ./logs-Subject-Independent-Ours/results/SNN_IMU_Parkinson_PAS_Net
+  save_predictions: false
+training:
+  log_early_exit: true
+  early_exit_power_threshold: 90.0
+  amp: false
+  batch_size: 48
+  clip_grad: 2.0
+  eval_freq: 5
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  pred_time_mode: mean
+  loss:
+    name: cross_entropy
+    label_smoothing: 0.05
+    use_tse: true
+    tse_weighting: linear
+    tse_min_weight: 0.08
+    tse_warmup_ratio: 0.15
+  imu_augmentation:
+    enabled: true
+    prob: 0.45
+    noise_std: 0.025
+    scale_range:
+    - 0.88
+    - 1.12
+    rotation_max_deg: 18.0
+  num_epochs: 160
+  num_workers: 8
+  optimizer:
+    lr: 0.001
+    momentum: 0.9
+    name: adamw
+    weight_decay: 0.02
+  pin_memory: true
+  print_freq: 100
+  save_freq: 10
+  topology_l1_weight: 3e-5
+  sparsity_weight: 0.0
+  scheduler:
+    gamma: 0.1
+    min_lr: 1.0e-07
+    name: cosine
+    step_size: 50
+    warmup_epochs: 32
+    warmup_lr: 1e-6

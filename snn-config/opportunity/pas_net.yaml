@@ -1,0 +1,112 @@
+# PAS-Net (`snn-model/PAS_Net.py`, class IMUSpikeformer). Aligns with logs-Subject-Independent-Ours/SNN_IMU_* :
+# Locomotion 4-class, 5 IMU nodes × 6 channels (imu_accgyro_5nodes).
+dataset:
+  name: Opportunity
+  data_root: ./datasets
+  subject_independent_split: true
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  opportunity:
+    relative_root: OpportunityUCIDataset/dataset
+    split_mode: subject_independent
+    label_task: locomotion
+    sensor_preset: imu_accgyro_5nodes
+    pad_to_reference_channels: false
+    window_size: 60
+    window_stride: 30
+    normalize: true
+    missing_fill: ffill
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 0
+model:
+  type: pas_net
+  model_file: snn-model/PAS_Net.py
+  model_class: IMUSpikeformer
+  num_classes: 4
+  input_channels: 6
+  embed_dims: 64
+  depth: 4
+  mlp_ratio: 3.0
+  drop_path_rate: 0.20
+  V_nodes: 5
+  use_adaptive_topology: true
+  norm_type: tbn
+  use_plif: true
+  learnable_decay: true
+  st_kernel_size: 5
+  st_causal: false
+  residual_mode: add
+  lif_backend: torch
+  use_local_stats: true
+  local_stat_stride: 2
+  neuromod_mode: conv
+  neuromod_alpha: 0.85
+  use_causal_dw_mlp: true
+  mlp_time_kernel: 5
+  dilation_base: 3
+  use_lightweight_mlp_dw: false
+  share_block_weights: false
+  spatial_pool_mode: mean_max
+  dropout: 0.20
+project:
+  checkpoint_dir: ./logs-Subject-Independent-Ours/checkpoints/SNN_IMU_Opportunity_IMUPhysicsSpikeformer
+  exp_dir: ./logs-Subject-Independent-Ours
+  log_file: ./logs-Subject-Independent-Ours/SNN_IMU_Opportunity_IMUPhysicsSpikeformer_training.log
+  name: SNN_IMU_Opportunity_IMUPhysicsSpikeformer
+  seed: 42
+testing:
+  batch_size: 64
+  checkpoint: ''
+  num_workers: 8
+  output_dir: ./logs-Subject-Independent-Ours/results/SNN_IMU_Opportunity_IMUPhysicsSpikeformer
+  save_predictions: false
+training:
+  log_early_exit: true
+  early_exit_power_threshold: 90.0
+  amp: false
+  batch_size: 32
+  clip_grad: 2.0
+  eval_freq: 1
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  pred_time_mode: last
+  loss:
+    name: cross_entropy
+    label_smoothing: 0.10
+    use_tse: true
+    tse_weighting: exp
+    tse_min_weight: 0.03
+    tse_warmup_ratio: 0.25
+  imu_augmentation:
+    enabled: true
+    prob: 0.45
+    noise_std: 0.025
+    scale_range:
+    - 0.88
+    - 1.12
+    rotation_max_deg: 18.0
+  num_epochs: 200
+  num_workers: 8
+  optimizer:
+    lr: 0.00028
+    momentum: 0.9
+    name: adamw
+    weight_decay: 0.045
+  pin_memory: true
+  print_freq: 100
+  save_freq: 5
+  early_stopping_patience: 0
+  early_stopping_min_delta: 0.02
+  topology_l1_weight: 3e-5
+  sparsity_weight: 0.0
+  scheduler:
+    gamma: 0.1
+    min_lr: 1.0e-07
+    name: cosine
+    step_size: 50
+    warmup_epochs: 12
+    warmup_lr: 1e-6
