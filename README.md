@@ -71,7 +71,7 @@ We release **PAS-Net** (Physics-Aware Spiking Network)—a spiking architecture 
 | Other | See `requirements.txt` (`numpy`, `pandas`, `pyyaml`, `timm`, `tensorboard`, …) |
 
 ```bash
-git clone https://github.com/<your-org>/PAS-Net.git   # placeholder URL
+https://github.com/zhengnaichuan2022/PAS-Net.git  # placeholder URL
 cd PAS-Net
 pip install -r requirements.txt
 ```
