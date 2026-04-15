@@ -1,0 +1,120 @@
+dataset:
+  name: HuGaDB
+  data_root: ./datasets
+  subject_independent_split: true
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  opportunity:
+    relative_root: OpportunityUCIDataset/dataset
+    split_mode: subject_independent
+    label_task: locomotion
+    sensor_preset: uci_s123
+    pad_to_reference_channels: true
+    window_size: 30
+    window_stride: 15
+    normalize: true
+    activities:
+    - 1
+    - 2
+    - 4
+    - 5
+    missing_fill: ffill
+  hugadb:
+    relative_root: HuGaDB
+    data_dir: Data
+    subjects:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    activities:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    window_size: 128
+    window_stride: 64
+    normalize: true
+    sensor_positions: all
+    sensor_type: both
+    require_window_label_consensus: true
+    min_label_ratio: 1.0
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 0
+model:
+  btcv_mode: 1
+  hidden_dim: 128
+  num_domains: 1
+  use_dabn: true
+  input_channels: 6
+  model_class: UniHARANN
+  model_file: ann-model/unihar_ann.py
+  num_classes: 12
+  num_imus: 6
+  time_steps: 4
+  type: unihar_ann
+project:
+  checkpoint_dir: ./logs-Subject-Independent-ANN/checkpoints/SNN_IMU_ANN_HuGaDB_UniHAR
+  exp_dir: ./logs-Subject-Independent-ANN
+  log_file: ./logs-Subject-Independent-ANN/SNN_IMU_ANN_HuGaDB_UniHAR_training.log
+  name: SNN_IMU_ANN_HuGaDB_UniHAR
+  seed: 42
+testing:
+  batch_size: 32
+  checkpoint: ''
+  num_workers: 8
+  output_dir: ./logs-Subject-Independent-ANN/results
+  save_predictions: false
+training:
+  amp: false
+  batch_size: 32
+  clip_grad: 0.0
+  eval_freq: 5
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  loss:
+    label_smoothing: 0.1
+    name: cross_entropy
+  num_epochs: 100
+  num_workers: 8
+  optimizer:
+    lr: 0.001
+    momentum: 0.9
+    name: adamw
+    weight_decay: 0.01
+  pin_memory: true
+  print_freq: 100
+  save_freq: 10
+  scheduler:
+    gamma: 0.1
+    min_lr: 1.0e-05
+    name: cosine
+    step_size: 50
+    warmup_epochs: 20
+    warmup_lr: 1e-6

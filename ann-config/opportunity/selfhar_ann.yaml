@@ -1,0 +1,72 @@
+dataset:
+  name: Opportunity
+  data_root: ./datasets
+  subject_independent_split: true
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  opportunity:
+    relative_root: OpportunityUCIDataset/dataset
+    split_mode: subject_independent
+    label_task: locomotion
+    sensor_preset: uci_s123
+    pad_to_reference_channels: true
+    window_size: 60
+    window_stride: 30
+    normalize: true
+    missing_fill: ffill
+device:
+  cuda: true
+  distributed: false
+  gpu_ids:
+  - 0
+model:
+  btcv_mode: 1
+  hidden_dim: 128
+  temperature: 0.5
+  input_channels: 114
+  model_class: SelfHARANN
+  model_file: ann-model/selfhar_ann.py
+  num_classes: 4
+  num_imus: 1
+  time_steps: 4
+  type: selfhar_ann
+project:
+  checkpoint_dir: ./logs-Subject-Independent-ANN/checkpoints/SNN_IMU_ANN_Opportunity_SelfHAR
+  exp_dir: ./logs-Subject-Independent-ANN
+  log_file: ./logs-Subject-Independent-ANN/SNN_IMU_ANN_Opportunity_SelfHAR_training.log
+  name: SNN_IMU_ANN_Opportunity_SelfHAR
+  seed: 42
+testing:
+  batch_size: 32
+  checkpoint: ''
+  num_workers: 8
+  output_dir: ./logs-Subject-Independent-ANN/results
+  save_predictions: false
+training:
+  amp: false
+  batch_size: 32
+  clip_grad: 0.0
+  eval_freq: 5
+  run_final_test: true
+  model_selection: accuracy  # accuracy | macro_f1
+  loss:
+    label_smoothing: 0.1
+    name: cross_entropy
+  num_epochs: 100
+  num_workers: 8
+  optimizer:
+    lr: 0.001
+    momentum: 0.9
+    name: adamw
+    weight_decay: 0.01
+  pin_memory: true
+  print_freq: 100
+  save_freq: 10
+  scheduler:
+    gamma: 0.1
+    min_lr: 1.0e-05
+    name: cosine
+    step_size: 50
+    warmup_epochs: 20
+    warmup_lr: 1e-6
